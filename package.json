@@ -6,13 +6,10 @@
   "scripts": {
     "start": "node index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/YuriyPro/task.git"
-  },
+  
   "author": "Yuriy Protsko",
   "license": "ISC",
-  "homepage": "https://github.com/YuriyPro/task#readme",
+  
   "dependencies": {
     "body-parser": "^1.19.0",
     "connect": "^3.7.0",
