@@ -1,0 +1,6 @@
+# всі бібліолтеки
+/node_modules
+
+# готовий проект
+/dist
+node_modules
