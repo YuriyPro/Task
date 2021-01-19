@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title> Video Converter</title>
+    <title> Video Cut</title>
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -13,27 +13,16 @@
   <body>
     <div class="container">
       <br /><br />
-      <h1 style="text-align: center;"> Video Converter</h1>
+      <h1 style="text-align: center;">Cut Video </h1>
       <form action="/video" method="post" enctype="multipart/form-data">
         <div class="form-group">
           <input id="inp" type="file" name="file"/>
         </div>
         
-        <!-- <input id="path" type="hidden"  name="path"></input>
-        <div class="form-group">
-          <label for="to">To:</label>
-          <select class="form-control" name="to">
-            <option>mp4</option>
-            <option>flv</option>
-            <option>avi</option>
-            <option>webm</option>
-            <option>mov</option>
-          </select>
-        </div>
-        <br /> -->
+        
         <div class="form-group">
           <button class="btn btn-danger btn-block" type="submit">
-            Convert
+            To cut video
           </button>
         </div>
       </form>

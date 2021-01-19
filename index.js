@@ -8,13 +8,12 @@ const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const exec = util.promisify(require("child_process").exec);
 const app = express();
-var path = require('path');
 const temp = __dirname+"\\tmp\\";
 const allVideos =  __dirname+"\\videos\\";
 const testAudio =  __dirname+"\\audios\\";
 const movie =  __dirname+"\\movie\\";
 const mediainfo = require('node-mediainfo');
-var multer = require('multer');
+
 app.use(bodyParser.json())
 
 
@@ -32,10 +31,6 @@ app.use(
   })
 );
 
-// app.use("/videos/",function (request, response) {
-
-//   response.send("Список ");
-// });
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -49,6 +44,9 @@ app.post("/video", (req, res) => {
       console.log(filename);
       var type = filename.split('.').pop();
       console.log(type);
+      if(`${movie}${filename}`){
+        deleteFile(`${movie}`, `${filename}`);
+      }
 
       if (type == "avi" || type == "mp4") {
 
@@ -74,13 +72,13 @@ app.post("/video", (req, res) => {
               console.log("Crop Mp4 video");
               console.log("Take audio from video file");
               let audio = await exec(`ffmpeg -i ${temp}${filename} -vn -map 0:1 ${testAudio}audio.wav -hide_banner`);
-              if (audio) {
+              if (audio.stderr) {
                 console.log("Crop video file");
                 let cropVideo = await exec(`ffmpeg -i ${temp}${filename} -vf crop=${height}:${height} -c:v libx264 -crf 0 ${allVideos}${filename} -hide_banner`);
-                if (cropVideo) {
+                if (cropVideo.stderr) {
                   console.log("Create new video and add audio for him");
                   let fin = await exec(`ffmpeg -i ${allVideos}${filename} -i ${testAudio}audio.wav  -map 0:v -map 1:a  -shortest  ${movie}${filename} -hide_banner`);
-                  if (fin) {
+                  if (fin.stderr) {
                     console.log("Finish ");
                     deleteFile(`${testAudio}`, 'audio.wav');
                     deleteFile(`${allVideos}`, `${filename}`);
@@ -89,10 +87,10 @@ app.post("/video", (req, res) => {
                       croppedVideoUrl: "http://" + `${movie}${filename}`,
                     });
                   } else {
-                    deleteFile(`${movie}`, `${filename}`)
+                    deleteFile(`${movie}`, `${filename}`);
                   }
                 } else {
-                  deleteFile(`${allVideos}`, `${filename}`)
+                  deleteFile(`${allVideos}`, `${filename}`);
                 }
               }
               else {
@@ -113,13 +111,13 @@ app.post("/video", (req, res) => {
               console.log("Crop Mp4 video");
               console.log("Take audio from video file");
               let audio = await exec(`ffmpeg -i ${temp}${filename} -vn -map 0:1 ${testAudio}audio.wav -hide_banner`);
-              if (audio) {
+              if (audio.stderr) {
                 console.log("Crop video file");
                 let cropVideo = await exec(`ffmpeg -i ${temp}${filename} -vf crop=${width}:${width} -c:v libx264 -crf 0 ${allVideos}${filename} -hide_banner`);
-                if (cropVideo) {
+                if (cropVideo.stderr) {
                   console.log("Create new video and add audio for him");
                   let fin = await exec(`ffmpeg -i ${allVideos}${filename} -i ${testAudio}audio.wav  -map 0:v -map 1:a  -shortest  ${movie}${filename} -hide_banner`);
-                  if (fin) {
+                  if (fin.stderr) {
                     console.log("Finish ");
                     deleteFile(`${testAudio}`, 'audio.wav');
                     deleteFile(`${allVideos}`, `${filename}`);
@@ -142,13 +140,13 @@ app.post("/video", (req, res) => {
               console.log("Crop Mp4 video");
               console.log("Take audio from video file");
               let audio = await exec(`ffmpeg -i ${temp}${filename} -vn -map 0:1 ${testAudio}audio.wav -hide_banner`);
-              if (audio) {
+              if (audio.stderr) {
                 console.log("Crop video file");
                 let cropVideo = await exec(`ffmpeg -i ${temp}${filename} -vf crop=${width}:${height} -c:v libx264 -crf 0 ${allVideos}${filename} -hide_banner`);
-                if (cropVideo) {
+                if (cropVideo.stderr) {
                   console.log("Create new video and add audio for him");
                   let fin = await exec(`ffmpeg -i ${allVideos}${filename} -i ${testAudio}audio.wav  -map 0:v -map 1:a  -shortest  ${movie}${filename} -hide_banner`);
-                  if (fin) {
+                  if (fin.stderr) {
                     console.log("Finish ");
                     deleteFile(`${testAudio}`, 'audio.wav');
                     deleteFile(`${allVideos}`, `${filename}`);
@@ -194,17 +192,16 @@ app.post("/video", (req, res) => {
             //let rateSimple=Number(result.media.track[2].SamplingRate);
             //let bitRate=Number(result.media.track[2].BitRate);
             if (width > height) {
-             
               console.log("Crop Avi video");
               console.log("Take audio from video file");
               let audio = await exec(`ffmpeg -i ${temp}${filename} -vn -map 0:1 ${testAudio}audio.wav -hide_banner`);
-              if (audio) {
+              if (audio.stderr) {
                 console.log("Crop video file");
                 let cropVideo = await exec(`ffmpeg -ss 0 -i ${temp}${filename} -filter:v crop=${height}:${height} -map 0:0 ${allVideos}${filename} -hide_banner`);
-                if (cropVideo) {
+                if (cropVideo.stderr) {
                   console.log("Create new video and add audio for him");
                   let fin = await exec(`ffmpeg -i ${allVideos}${filename} -i ${testAudio}audio.wav  -map 0:v -map 1:a -c copy -shortest  ${movie}${filename} -hide_banner`);
-                  if (fin) {
+                  if (fin.stderr) {
                     console.log("Finish");
                     deleteFile(`${testAudio}`, 'audio.wav');
                     deleteFile(`${allVideos}`, `${filename}`);
@@ -228,13 +225,13 @@ app.post("/video", (req, res) => {
               console.log("Crop Avi video");
               console.log("Take audio from video file");
               let audio = await exec(`ffmpeg -i ${temp}${filename} -vn -map 0:1 ${testAudio}audio.wav -hide_banner`);
-              if (audio) {
+              if (audio.stderr) {
                 console.log("Crop video file");
                 let cropVideo = await exec(`ffmpeg -ss 0 -i ${temp}${filename} -filter:v crop=${width}:${width} -map 0:0 ${allVideos}${filename} -hide_banner`);
-                if (cropVideo) {
+                if (cropVideo.stderr) {
                   console.log("Create new video and add audio for him");
                   let fin = await exec(`ffmpeg -i ${allVideos}${filename} -i ${testAudio}audio.wav  -map 0:v -map 1:a -c copy -shortest  ${movie}${filename} -hide_banner`);
-                  if (fin) {
+                  if (fin.stderr) {
                     console.log("Finish");
                     deleteFile(`${testAudio}`, 'audio.wav');
                     deleteFile(`${allVideos}`, `${filename}`);
@@ -257,13 +254,13 @@ app.post("/video", (req, res) => {
               console.log("Crop Avi video");
               console.log("Take audio from video file");
               let audio = await exec(`ffmpeg -i ${temp}${filename} -vn -map 0:1 ${testAudio}audio.wav -hide_banner`);
-              if (audio) {
+              if (audio.stderr) {
                 console.log("Crop video file");
                 let cropVideo = await exec(`ffmpeg -ss 0 -i ${temp}${filename} -filter:v crop=${width}:${height} -map 0:0 ${allVideos}${filename} -hide_banner`);
-                if (cropVideo) {
+                if (cropVideo.stderr) {
                   console.log("Create new video and add audio for him");
                   let fin = await exec(`ffmpeg -i ${allVideos}${filename} -i ${testAudio}audio.wav  -map 0:v -map 1:a -c copy -shortest  ${movie}${filename} -hide_banner`);
-                  if (fin) {
+                  if (fin.stderr) {
                     console.log("Finish");
                     deleteFile(`${testAudio}`, 'audio.wav');
                     deleteFile(`${allVideos}`, `${filename}`);
