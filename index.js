@@ -8,10 +8,10 @@ const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const exec = util.promisify(require("child_process").exec);
 const app = express();
-const temp = __dirname+"\\tmp\\";
-const allVideos =  __dirname+"\\videos\\";
-const testAudio =  __dirname+"\\audios\\";
-const movie =  __dirname+"\\movie\\";
+const temp = __dirname + "\\tmp\\";
+const allVideos = __dirname + "\\videos\\";
+const testAudio = __dirname + "\\audios\\";
+const movie = __dirname + "\\movie\\";
 const mediainfo = require('node-mediainfo');
 
 app.use(bodyParser.json())
@@ -37,16 +37,20 @@ app.get("/", (req, res) => {
 });
 
 app.post("/video", (req, res) => {
-  
+
+  var filename = req.files.file.name;
+  const path = (`${movie}${filename}`);
+  if (fs.existsSync(path)) {
+    deleteFile(`${movie}`, `${filename}`);
+  }
+
   async function convert() {
     try {
+      
       var filename = req.files.file.name;
       console.log(filename);
       var type = filename.split('.').pop();
       console.log(type);
-      if(`${movie}${filename}`){
-        deleteFile(`${movie}`, `${filename}`);
-      }
 
       if (type == "avi" || type == "mp4") {
 
@@ -221,7 +225,7 @@ app.post("/video", (req, res) => {
               }
             }
             if (height > width) {
-              
+
               console.log("Crop Avi video");
               console.log("Take audio from video file");
               let audio = await exec(`ffmpeg -i ${temp}${filename} -vn -map 0:1 ${testAudio}audio.wav -hide_banner`);
